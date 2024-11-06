@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -69,5 +70,8 @@ def delete_countdown(id):
     countdowns = [c for c in countdowns if c['id'] != id]  # Remove countdown by ID
     return redirect(url_for('view_countdowns'))  # Redirect to the view countdowns page after deletion
 
+# Make sure to run the app on the correct host and port for Heroku.
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Get the port from Heroku environment, or fallback to 5000 for local development
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)  # Don't use debug in production
