@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Countdowns</title>
+</head>
+<body>
+    <h1>All Countdowns</h1>
+
+    {% if countdowns %}
+        <ul>
+            {% for countdown in countdowns %}
+                <li><a href="{{ url_for('view_countdown', id=countdown.id) }}">{{ countdown.name }} on {{ countdown.date }} at {{ countdown.time }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No countdowns set.</p>
+    {% endif %}
+
+    <br>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ countdown.name }} Countdown</title>
+    <script>
+        // This function will be used to update the countdown every second
+        function updateCountdown() {
+            var targetTime = new Date("{{ countdown.date }}T{{ countdown.time }}").getTime();
+            var currentTime = new Date().getTime();
+            var timeRemaining = targetTime - currentTime;
+
+            // Calculate days, hours, minutes, and seconds
+            var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+            // Display the countdown
+            document.getElementById("countdown").innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+            // If the countdown is finished, display a message
+            if (timeRemaining < 0) {
+                document.getElementById("countdown").innerHTML = "EXPIRED";
+            }
+        }
+
+        // Update countdown every 1 second
+        setInterval(updateCountdown, 1000);
+    </script>
+</head>
+<body>
+    <h1>{{ countdown.name }} Countdown</h1>
+    <p><strong>Name:</strong> {{ countdown.name }}</p>
+    <p><strong>Date:</strong> {{ countdown.date }}</p>
+    <p><strong>Time:</strong> {{ countdown.time }}</p>
+
+    <h2>Time Remaining:</h2>
+    <p id="countdown">{{ days_remaining }}d {{ hours_remaining }}h {{ minutes_remaining }}m {{ seconds_remaining }}s</p>
+
+    <br>
+    <!-- Delete Countdown Button -->
+    <form action="{{ url_for('delete_countdown', id=countdown.id) }}" method="GET" style="display: inline;">
+        <button type="submit">Delete Countdown</button>
+    </form>
+
+    <br>
+    <a href="{{ url_for('view_countdowns') }}">Back to Countdowns</a>
+</body>
+</html>
