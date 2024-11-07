@@ -74,4 +74,4 @@ def delete_countdown(id):
 if __name__ == '__main__':
     # Get the port from Heroku environment, or fallback to 5000 for local development
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)  # Don't use debug in production
+    app.run(host='0.0.0.0', port=port, debug=False)  # Ensure debug=False in production
