@@ -4,25 +4,25 @@ import os
 
 app = Flask(__name__)
 
-# Path to the folder where photos will be stored
-UPLOAD_FOLDER = 'static/photos'
+# Path to the folder where photos will be stored (works both locally and on Heroku)
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'photos')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# List to store countdowns as dictionaries with unique IDs
+# List to store countdowns as dictionaries with unique IDs (in-memory storage for now)
 countdowns = []
 photos = []  # List to store the filenames of uploaded photos
 albums = []  # List to store albums
-dates=[]
-journals=[]
+dates = []
+journals = []
+
 @app.route('/')
 def home():
     return render_template('home.html')
 
-########################## COUNTDOWN TIMER ##########################33
+########################## COUNTDOWN TIMER ##########################
 @app.route('/index')
 def index():
     return render_template('index.html')
-
 
 @app.route('/set_countdown', methods=['GET', 'POST'])
 def set_countdown():
@@ -44,11 +44,9 @@ def set_countdown():
 
     return render_template('set_countdown.html')
 
-
 @app.route('/view_countdowns')
 def view_countdowns():
     return render_template('view_countdowns.html', countdowns=countdowns)
-
 
 @app.route('/view_countdown/<int:id>')
 def view_countdown(id):
@@ -74,23 +72,23 @@ def view_countdown(id):
     else:
         return "Countdown not found", 404
 
-
 @app.route('/delete_countdown/<int:id>', methods=['GET'])
 def delete_countdown(id):
     global countdowns
     countdowns = [c for c in countdowns if c['id'] != id]
     return redirect(url_for('view_countdowns'))
 
-#######################---date planner---############################
+####################### DATE PLANNER ############################
 @app.route('/date_planner', methods=['GET'])
 def date_planner():
     return render_template('date_planner.html', albums=albums)
+
 @app.route('/set_date_idea', methods=['GET', 'POST'])
 def set_date_idea():
     if request.method == 'POST':
         set_name = request.form['name']
 
-        # Store the countdown with a unique ID
+        # Store the date idea with a unique ID
         date_id = len(dates)
         dates.append({
             'id': date_id,
@@ -102,7 +100,6 @@ def set_date_idea():
         return redirect(url_for('view_date_ideas'))
 
     return render_template('set_date_idea.html')
-
 
 @app.route('/view_date_ideas')
 def view_date_ideas():
@@ -125,13 +122,10 @@ def view_date_detail(date_id):
 
     return render_template('view_date_detail.html', date_idea=date_idea)
 
-
 ####################### JOURNAL ENTRIES #######################
-
 @app.route('/shared_journal_home')
 def shared_journal_home():
     return render_template('shared_journal_home.html')
-
 
 @app.route('/create_journal_entry', methods=['GET', 'POST'])
 def create_journal_entry():
@@ -151,11 +145,9 @@ def create_journal_entry():
 
     return render_template('create_journal_entry.html')
 
-
 @app.route('/view_journals')
 def view_journals():
     return render_template('view_journals.html', journals=journals)
-
 
 @app.route('/view_journal_detail/<int:journal_id>', methods=['GET', 'POST'])
 def view_journal_detail(journal_id):
@@ -174,12 +166,10 @@ def view_journal_detail(journal_id):
 
     return render_template('view_journal_detail.html', journal_entry=journal_entry)
 
-
-#####################-- Photos Routes -- #############################
+##################### PHOTOS ROUTES #############################
 @app.route('/photos', methods=['GET'])
 def photos_page():
     return render_template('photos_home.html', albums=albums)
-
 
 @app.route('/create_album', methods=['GET', 'POST'])
 def create_album():
@@ -195,14 +185,12 @@ def create_album():
 
     return render_template('create_album.html')
 
-
 @app.route('/view_album/<int:album_id>', methods=['GET'])
 def view_album(album_id):
     album = next((a for a in albums if a['id'] == album_id), None)
     if not album:
         return "Album not found", 404
     return render_template('view_album.html', album=album)
-
 
 @app.route('/upload_photo/<int:album_id>', methods=['POST'])
 def upload_photo(album_id):
@@ -227,8 +215,10 @@ def upload_photo(album_id):
     return redirect(url_for('view_album', album_id=album_id))
 
 
+# To run the app
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)  # Create the 'photos' folder if it doesn't exist
 
-    app.run(debug=True)
+    # Heroku automatically uses PORT and binds to '0.0.0.0'
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
