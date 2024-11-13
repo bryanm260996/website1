@@ -4,21 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Countdowns</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9; /* Soft off-white background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #e63946; /* Elegant soft red */
+            font-family: 'Georgia', serif;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background-color: #f4f4f9; /* Slightly darker background for list items */
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-size: 18px;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        li:hover {
+            background-color: #e63946; /* Soft red background on hover */
+            color: white;
+        }
+
+        a {
+            text-decoration: none;
+            color: #e63946; /* Soft red color */
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #d62828; /* Darker red on hover */
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* Back to Home link */
+        .back-link {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #e63946; /* Elegant soft red */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 18px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #d62828; /* Darker red */
+        }
+    </style>
 </head>
 <body>
-    <h1>All Countdowns</h1>
+    <div class="container">
+        <h1>All Countdowns</h1>
 
-    {% if countdowns %}
-        <ul>
-            {% for countdown in countdowns %}
-                <li><a href="{{ url_for('view_countdown', id=countdown.id) }}">{{ countdown.name }} on {{ countdown.date }} at {{ countdown.time }}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No countdowns set.</p>
-    {% endif %}
+        {% if countdowns %}
+            <ul>
+                {% for countdown in countdowns %}
+                    <li><a href="{{ url_for('view_countdown', id=countdown.id) }}">{{ countdown.name }} on {{ countdown.date }} at {{ countdown.time }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No countdowns set.</p>
+        {% endif %}
 
-    <br>
-    <a href="{{ url_for('home') }}">Back to Home</a>
+        <a class="back-link" href="{{ url_for('home') }}">Back to Home</a>
+    </div>
 </body>
 </html>

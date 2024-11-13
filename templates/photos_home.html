@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Albums</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9; /* Soft off-white background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        header {
+            background-color: #e63946; /* Elegant soft red */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 2.5rem;
+            font-family: 'Georgia', serif;
+            border-bottom: 3px solid #d62828;
+        }
+        header h1 {
+            margin: 0;
+        }
+        main {
+            text-align: center;
+            background-color: #ffffff;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px;
+        }
+        button {
+            background-color: #e63946; /* Elegant soft red */
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #d62828; /* Darker red */
+            transform: scale(1.05); /* Subtle zoom effect */
+        }
+        button:focus {
+            outline: none;
+        }
+        h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+        a {
+            text-decoration: none;
+            color: #e63946;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #d62828;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #e63946;
+            color: white;
+            font-size: 1rem;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        footer p {
+            margin: 0;
+        }
+
+        /* Subtle heart animation */
+        .floating-heart {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 4s ease-in-out infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Our Photo Albums</h1>
+    </header>
+
+    <main>
+        <button onclick="window.location.href='{{ url_for('create_album') }}'">Create New Album</button>
+        <div>
+            <h2>Existing Albums:</h2>
+            <ul>
+                {% for album in albums %}
+                    <li><a href="{{ url_for('view_album', album_id=album.id) }}">{{ album.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Maro & Bryan. All rights reserved.</p>
+    </footer>
+
+
+
+</body>
+</html>

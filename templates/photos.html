@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Photos</title>
+    <style>
+        /* Body styling */
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #444;
+            background-image: linear-gradient(to right, #f4e1d2, #f1c6b0);
+        }
+
+        /* Container styling */
+        .container {
+            text-align: center;
+            background-color: #fff;
+            box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 50px;
+            width: 100%;
+            max-width: 600px;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Header styling */
+        h1 {
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #5d3e2e;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Input file styling */
+        input[type="file"] {
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+            background-color: #f8f8f8;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+            transition: border-color 0.3s ease;
+        }
+
+        /* On hover, highlight the input field */
+        input[type="file"]:focus {
+            border-color: #e09273;
+            outline: none;
+        }
+
+        /* Button styling */
+        button {
+            background-color: #e09273;
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            margin-top: 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #cf7f62;
+            transform: translateY(-3px);
+        }
+
+        /* Gallery styling */
+        .gallery {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .gallery img {
+            margin: 12px;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Footer styling */
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* Link styling */
+        a {
+            color: #e09273;
+            text-decoration: none;
+            font-size: 16px;
+            margin-top: 20px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Upload Your Special Moments</h1>
+        <form action="{{ url_for('upload_photo') }}" method="POST" enctype="multipart/form-data">
+            <input type="file" name="photo" accept="image/*" required>
+            <br>
+            <button type="submit">Upload Photo</button>
+        </form>
+
+        <h2>Uploaded Photos</h2>
+        <div class="gallery">
+            {% for photo in photos %}
+                <img src="{{ url_for('static', filename='photos/' + photo) }}" alt="Uploaded photo" width="200">
+            {% endfor %}
+        </div>
+
+        <br>
+        <a href="{{ url_for('home') }}">Back to Home</a>
+    </div>
+
+</body>
+</html>

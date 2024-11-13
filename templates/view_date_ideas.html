@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Date Ideas</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fef8f7; /* Soft light pink background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        /* Main content container */
+        main {
+            background-color: #ffffff; /* White background for content */
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        /* Header title */
+        h1 {
+            font-size: 36px;
+            color: #e74c3c; /* Romantic red color */
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        /* List of date ideas */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            font-size: 18px;
+            color: #555;
+            text-align: left;
+        }
+
+        ul li {
+            margin: 15px 0;
+        }
+
+        /* Link to view specific date idea */
+        a {
+            color: #e74c3c;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #c0392b;
+            text-decoration: underline;
+        }
+
+        /* Completed status style */
+        .completed {
+            color: green;
+            font-style: italic;
+        }
+
+        /* Link to set new date idea */
+        .set-date-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #e74c3c;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .set-date-link:hover {
+            color: #c0392b;
+            text-decoration: underline;
+        }
+
+        /* Back to Home Button */
+        .back-home-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-home-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Footer styling */
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <h1>Here are your Date Ideas</h1>
+
+        {% if dates %}
+            <ul>
+                {% for date in dates %}
+                    <li>
+                        <a href="{{ url_for('view_date_detail', date_id=date.id) }}">{{ date.name }}</a>
+                        {% if date.completed %}
+                            <span class="completed">(Completed)</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No date ideas have been set yet!</p>
+        {% endif %}
+
+        <a href="{{ url_for('set_date_idea') }}" class="set-date-link">Go to Set Date Idea</a>
+
+        <!-- Back to Home Button -->
+        <a href="{{ url_for('home') }}" class="back-home-btn">Back to Home</a>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Maro y Bryan. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

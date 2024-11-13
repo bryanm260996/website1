@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date planner</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fef8f7; /* Soft light pink background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        /* Main container styling */
+        .container {
+            text-align: center;
+            background-color: #ffffff; /* White background for content */
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Header title */
+        h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #e74c3c; /* Romantic red color */
+            font-weight: bold;
+        }
+
+        /* Style for links (buttons) */
+        a {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #e74c3c; /* Romantic red color */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 18px;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #c0392b; /* Darker red on hover */
+        }
+
+        /* Footer styling */
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* Back to Home Button */
+        .back-home-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-home-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Let's share a Journal</h1>
+        <div>
+            <a href="{{ url_for('create_journal_entry') }}">Create Journal Entry</a>
+            <a href="{{ url_for('view_journals') }}">View All Entries</a>
+        </div>
+        <!-- Back to Home Button -->
+        <a href="{{ url_for('home') }}" class="back-home-btn">Back to Home</a>
+
+        <div class="footer">
+            <p>&copy; 2024 We are so cool App</p>
+        </div>
+    </div>
+</body>
+</html>

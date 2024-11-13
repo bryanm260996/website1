@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maro & Bryan's Journal</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9; /* Soft off-white background */
+            color: #333;
+            overflow-x: hidden;
+        }
+        header {
+            background-color: #e63946; /* Elegant soft red */
+            color: white;
+            padding: 30px;
+            text-align: center;
+            font-size: 2rem;
+            border-bottom: 3px solid #d62828; /* Slightly deeper red */
+        }
+        header h1 {
+            margin: 0;
+            font-size: 3rem;
+            font-family: 'Georgia', serif;
+        }
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+        button {
+            background-color: #e63946;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #d62828;
+            transform: scale(1.05); /* Slight hover zoom effect */
+        }
+        button:focus {
+            outline: none;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #e63946;
+            color: white;
+            font-size: 1rem;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        footer p {
+            margin: 0;
+        }
+
+        /* Subtle floating animation */
+        .floating-heart {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 4s ease-in-out infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header with title -->
+    <header>
+        <h1>Maro & Bryan</h1>
+    </header>
+
+    <!-- Main content with buttons -->
+    <main>
+        <button onclick="window.location.href='{{ url_for('index') }}'">Countdowns</button>
+        <button onclick="window.location.href='{{ url_for('photos_page') }}'">Our Photos</button>
+        <button onclick="window.location.href='{{ url_for('date_planner') }}'">Plan a Date</button>
+        <button onclick="window.location.href='{{ url_for('shared_journal_home') }}'">Our Journal</button>
+    </main>
+
+    <!-- Subtle floating hearts for a romantic touch -->
+    <div class="floating-heart" style="left: 25%; animation-delay: 2s;">❤️</div>
+    <div class="floating-heart" style="left: 50%; animation-delay: 1.5s;">💘</div>
+    <div class="floating-heart" style="left: 75%; animation-delay: 3s;">💖</div>
+
+    <!-- Footer with copyright notice -->
+    <footer>
+        <p>&copy; 2024 Maro & Bryan. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
