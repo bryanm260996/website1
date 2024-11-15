@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from datetime import datetime
 import os
 
 app = Flask(__name__)
+
+# Set a secret key for session management
+app.secret_key = os.urandom(24)
 
 # Path to the folder where photos will be stored (works both locally and on Heroku)
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'photos')
@@ -15,17 +18,49 @@ albums = []  # List to store albums
 dates = []
 journals = []
 
+# Predetermined password for authentication
+PASSWORD = os.environ.get('PASSWORD', '02100501')  # Default password for local testing
+
+# Helper function to check if the user is authenticated
+def is_authenticated():
+    return session.get('authenticated', False)
+
 @app.route('/')
 def home():
+    # If not authenticated, ask for password
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
     return render_template('home.html')
+
+@app.route('/password', methods=['GET', 'POST'])
+def password_prompt():
+    if request.method == 'POST':
+        password = request.form['password']
+        if password == PASSWORD:
+            session['authenticated'] = True
+            return redirect(url_for('home'))
+        else:
+            # Invalid password
+            return render_template('password_prompt.html', error="Invalid password")
+    return render_template('password_prompt.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('authenticated', None)  # Log the user out
+    return redirect(url_for('home'))
 
 ########################## COUNTDOWN TIMER ##########################
 @app.route('/index')
 def index():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
     return render_template('index.html')
 
 @app.route('/set_countdown', methods=['GET', 'POST'])
 def set_countdown():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     if request.method == 'POST':
         countdown_name = request.form['name']
         countdown_date = request.form['date']
@@ -46,10 +81,15 @@ def set_countdown():
 
 @app.route('/view_countdowns')
 def view_countdowns():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
     return render_template('view_countdowns.html', countdowns=countdowns)
 
 @app.route('/view_countdown/<int:id>')
 def view_countdown(id):
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     countdown = next((c for c in countdowns if c['id'] == id), None)
     if countdown:
         target_time = datetime.strptime(f"{countdown['date']} {countdown['time']}", '%Y-%m-%d %H:%M')
@@ -74,6 +114,9 @@ def view_countdown(id):
 
 @app.route('/delete_countdown/<int:id>', methods=['GET'])
 def delete_countdown(id):
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     global countdowns
     countdowns = [c for c in countdowns if c['id'] != id]
     return redirect(url_for('view_countdowns'))
@@ -81,10 +124,16 @@ def delete_countdown(id):
 ####################### DATE PLANNER ############################
 @app.route('/date_planner', methods=['GET'])
 def date_planner():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     return render_template('date_planner.html', albums=albums)
 
 @app.route('/set_date_idea', methods=['GET', 'POST'])
 def set_date_idea():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     if request.method == 'POST':
         set_name = request.form['name']
 
@@ -103,10 +152,16 @@ def set_date_idea():
 
 @app.route('/view_date_ideas')
 def view_date_ideas():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     return render_template('view_date_ideas.html', dates=dates)
 
 @app.route('/view_date_detail/<int:date_id>', methods=['GET', 'POST'])
 def view_date_detail(date_id):
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     # Find the date idea by ID
     date_idea = next((date for date in dates if date['id'] == date_id), None)
 
@@ -125,10 +180,16 @@ def view_date_detail(date_id):
 ####################### JOURNAL ENTRIES #######################
 @app.route('/shared_journal_home')
 def shared_journal_home():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     return render_template('shared_journal_home.html')
 
 @app.route('/create_journal_entry', methods=['GET', 'POST'])
 def create_journal_entry():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     if request.method == 'POST':
         set_name = request.form['name']
 
@@ -147,10 +208,16 @@ def create_journal_entry():
 
 @app.route('/view_journals')
 def view_journals():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     return render_template('view_journals.html', journals=journals)
 
 @app.route('/view_journal_detail/<int:journal_id>', methods=['GET', 'POST'])
 def view_journal_detail(journal_id):
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     # Find the journal entry by ID
     journal_entry = next((entry for entry in journals if entry['id'] == journal_id), None)
 
@@ -169,10 +236,16 @@ def view_journal_detail(journal_id):
 ##################### PHOTOS ROUTES #############################
 @app.route('/photos', methods=['GET'])
 def photos_page():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     return render_template('photos_home.html', albums=albums)
 
 @app.route('/create_album', methods=['GET', 'POST'])
 def create_album():
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     if request.method == 'POST':
         album_name = request.form['album_name']
         album_id = len(albums)
@@ -187,6 +260,9 @@ def create_album():
 
 @app.route('/view_album/<int:album_id>', methods=['GET'])
 def view_album(album_id):
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     album = next((a for a in albums if a['id'] == album_id), None)
     if not album:
         return "Album not found", 404
@@ -194,6 +270,9 @@ def view_album(album_id):
 
 @app.route('/upload_photo/<int:album_id>', methods=['POST'])
 def upload_photo(album_id):
+    if not is_authenticated():
+        return redirect(url_for('password_prompt'))
+
     album = next((a for a in albums if a['id'] == album_id), None)
     if not album:
         return "Album not found", 404
@@ -214,11 +293,9 @@ def upload_photo(album_id):
 
     return redirect(url_for('view_album', album_id=album_id))
 
-
 # To run the app
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)  # Create the 'photos' folder if it doesn't exist
 
-    # Heroku automatically uses PORT and binds to '0.0.0.0'
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
