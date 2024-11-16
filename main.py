@@ -1,6 +1,7 @@
+import os
+import json
 from flask import Flask, render_template, request, redirect, url_for, session
 from datetime import datetime
-import os
 
 app = Flask(__name__)
 
@@ -11,12 +12,8 @@ app.secret_key = os.urandom(24)
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'photos')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# List to store countdowns as dictionaries with unique IDs (in-memory storage for now)
-countdowns = []
-photos = []  # List to store the filenames of uploaded photos
-albums = []  # List to store albums
-dates = []
-journals = []
+# Path to the JSON file to store data
+DATA_FILE = 'data.json'
 
 # Predetermined password for authentication
 PASSWORD = os.environ.get('PASSWORD', '02100501')  # Default password for local testing
@@ -24,6 +21,21 @@ PASSWORD = os.environ.get('PASSWORD', '02100501')  # Default password for local 
 # Helper function to check if the user is authenticated
 def is_authenticated():
     return session.get('authenticated', False)
+
+# Helper function to load data from the JSON file
+def load_data():
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, 'r') as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            return {"countdowns": [], "photos": [], "albums": [], "dates": [], "journals": []}
+    return {"countdowns": [], "photos": [], "albums": [], "dates": [], "journals": []}
+
+# Helper function to save data to the JSON file
+def save_data(data):
+    with open(DATA_FILE, 'w') as file:
+        json.dump(data, file, indent=4)
 
 @app.route('/')
 def home():
@@ -61,20 +73,23 @@ def set_countdown():
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
+    data = load_data()
+
     if request.method == 'POST':
         countdown_name = request.form['name']
         countdown_date = request.form['date']
         countdown_time = request.form['time']
 
         # Store the countdown with a unique ID
-        countdown_id = len(countdowns)
-        countdowns.append({
+        countdown_id = len(data["countdowns"])
+        data["countdowns"].append({
             'id': countdown_id,
             'name': countdown_name,
             'date': countdown_date,
             'time': countdown_time
         })
 
+        save_data(data)  # Save data to JSON file
         return redirect(url_for('view_countdowns'))
 
     return render_template('set_countdown.html')
@@ -83,14 +98,17 @@ def set_countdown():
 def view_countdowns():
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
-    return render_template('view_countdowns.html', countdowns=countdowns)
+
+    data = load_data()
+    return render_template('view_countdowns.html', countdowns=data["countdowns"])
 
 @app.route('/view_countdown/<int:id>')
 def view_countdown(id):
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    countdown = next((c for c in countdowns if c['id'] == id), None)
+    data = load_data()
+    countdown = next((c for c in data["countdowns"] if c['id'] == id), None)
     if countdown:
         target_time = datetime.strptime(f"{countdown['date']} {countdown['time']}", '%Y-%m-%d %H:%M')
         current_time = datetime.now()
@@ -117,8 +135,9 @@ def delete_countdown(id):
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    global countdowns
-    countdowns = [c for c in countdowns if c['id'] != id]
+    data = load_data()
+    data["countdowns"] = [c for c in data["countdowns"] if c['id'] != id]
+    save_data(data)  # Save data to JSON file
     return redirect(url_for('view_countdowns'))
 
 ####################### DATE PLANNER ############################
@@ -127,25 +146,29 @@ def date_planner():
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    return render_template('date_planner.html', albums=albums)
+    data = load_data()
+    return render_template('date_planner.html', albums=data["albums"])
 
 @app.route('/set_date_idea', methods=['GET', 'POST'])
 def set_date_idea():
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
+    data = load_data()
+
     if request.method == 'POST':
         set_name = request.form['name']
 
         # Store the date idea with a unique ID
-        date_id = len(dates)
-        dates.append({
+        date_id = len(data["dates"])
+        data["dates"].append({
             'id': date_id,
             'name': set_name,
             'details': '',
             'completed': False,
         })
 
+        save_data(data)  # Save data to JSON file
         return redirect(url_for('view_date_ideas'))
 
     return render_template('set_date_idea.html')
@@ -155,15 +178,16 @@ def view_date_ideas():
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    return render_template('view_date_ideas.html', dates=dates)
+    data = load_data()
+    return render_template('view_date_ideas.html', dates=data["dates"])
 
 @app.route('/view_date_detail/<int:date_id>', methods=['GET', 'POST'])
 def view_date_detail(date_id):
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    # Find the date idea by ID
-    date_idea = next((date for date in dates if date['id'] == date_id), None)
+    data = load_data()
+    date_idea = next((date for date in data["dates"] if date['id'] == date_id), None)
 
     if not date_idea:
         return "Date idea not found", 404
@@ -173,6 +197,7 @@ def view_date_detail(date_id):
         date_idea['details'] = request.form['details']
         date_idea['completed'] = 'completed' in request.form  # Checkbox for completion
 
+        save_data(data)  # Save data to JSON file
         return redirect(url_for('view_date_ideas'))
 
     return render_template('view_date_detail.html', date_idea=date_idea)
@@ -190,18 +215,21 @@ def create_journal_entry():
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
+    data = load_data()
+
     if request.method == 'POST':
         set_name = request.form['name']
 
         # Store journal entry with a unique ID, and placeholders for Bryan and Maro's entries
-        journal_entry_id = len(journals)
-        journals.append({
+        journal_entry_id = len(data["journals"])
+        data["journals"].append({
             'id': journal_entry_id,
             'name': set_name,
             'Maro': '',
             'Bryan': ''
         })
 
+        save_data(data)  # Save data to JSON file
         return redirect(url_for('view_journals'))
 
     return render_template('create_journal_entry.html')
@@ -211,15 +239,16 @@ def view_journals():
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    return render_template('view_journals.html', journals=journals)
+    data = load_data()
+    return render_template('view_journals.html', journals=data["journals"])
 
 @app.route('/view_journal_detail/<int:journal_id>', methods=['GET', 'POST'])
 def view_journal_detail(journal_id):
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    # Find the journal entry by ID
-    journal_entry = next((entry for entry in journals if entry['id'] == journal_id), None)
+    data = load_data()
+    journal_entry = next((entry for entry in data["journals"] if entry['id'] == journal_id), None)
 
     if not journal_entry:
         return "Journal entry not found", 404
@@ -229,6 +258,7 @@ def view_journal_detail(journal_id):
         journal_entry['Maro'] = request.form['Maro']
         journal_entry['Bryan'] = request.form['Bryan']
 
+        save_data(data)  # Save data to JSON file
         return redirect(url_for('view_journals'))
 
     return render_template('view_journal_detail.html', journal_entry=journal_entry)
@@ -239,21 +269,26 @@ def photos_page():
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    return render_template('photos_home.html', albums=albums)
+    data = load_data()
+    return render_template('photos_home.html', albums=data["albums"])
 
 @app.route('/create_album', methods=['GET', 'POST'])
 def create_album():
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
+    data = load_data()
+
     if request.method == 'POST':
         album_name = request.form['album_name']
-        album_id = len(albums)
-        albums.append({
+        album_id = len(data["albums"])
+        data["albums"].append({
             'id': album_id,
             'name': album_name,
             'photos': []  # Start with an empty list of photos
         })
+
+        save_data(data)  # Save data to JSON file
         return redirect(url_for('view_album', album_id=album_id))
 
     return render_template('create_album.html')
@@ -263,7 +298,8 @@ def view_album(album_id):
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    album = next((a for a in albums if a['id'] == album_id), None)
+    data = load_data()
+    album = next((a for a in data["albums"] if a['id'] == album_id), None)
     if not album:
         return "Album not found", 404
     return render_template('view_album.html', album=album)
@@ -273,7 +309,8 @@ def upload_photo(album_id):
     if not is_authenticated():
         return redirect(url_for('password_prompt'))
 
-    album = next((a for a in albums if a['id'] == album_id), None)
+    data = load_data()
+    album = next((a for a in data["albums"] if a['id'] == album_id), None)
     if not album:
         return "Album not found", 404
 
@@ -291,6 +328,7 @@ def upload_photo(album_id):
     # Add the photo to the album
     album['photos'].append(photo.filename)
 
+    save_data(data)  # Save data to JSON file
     return redirect(url_for('view_album', album_id=album_id))
 
 # To run the app
