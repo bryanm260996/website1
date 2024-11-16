@@ -1,0 +1,14 @@
+{
+    "countdowns": [
+        {
+            "id": 0,
+            "name": "Thanksgiving",
+            "date": "2024-11-27",
+            "time": "18:01"
+        }
+    ],
+    "photos": [],
+    "albums": [],
+    "dates": [],
+    "journals": []
+}
