@@ -1,0 +1,29 @@
+<!-- view_your_goals.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Goals</title>
+</head>
+<body>
+    <h1>Your Goals</h1>
+
+    {% if goals %}
+        <ul>
+            {% for goal in goals %}
+                <li>
+                    <strong>{{ goal.name }}</strong><br>
+                    Deadline: {{ goal.deadline }}<br>
+                    Details: {{ goal.details }}<br>
+                    Completed: {% if goal.completed %}Yes{% else %}No{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No goals set yet. <a href="{{ url_for('set_short_term_goals') }}">Set your first goal</a>.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('goal_homepage') }}">Back to Goal Homepage</a></p>
+</body>
+</html>

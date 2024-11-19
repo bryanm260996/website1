@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Goals</title>
+</head>
+<body>
+    <h1>Your Goals</h1>
+
+    <h2>Short-Term Goals</h2>
+    <ul>
+        {% for goal in short_term_goals %}
+            <li>{{ goal.name }} - Deadline: {{ goal.deadline }} - Completed: {{ goal.completed }}</li>
+        {% else %}
+            <li>No short-term goals yet.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Long-Term Goals</h2>
+    <ul>
+        {% for goal in long_term_goals %}
+            <li>{{ goal.name }} - Deadline: {{ goal.deadline }} - Completed: {{ goal.completed }}</li>
+        {% else %}
+            <li>No long-term goals yet.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('set_short_term_goals') }}">Set a Short-Term Goal</a><br>
+    <a href="{{ url_for('set_long_term_goals') }}">Set a Long-Term Goal</a><br>
+    <a href="{{ url_for('view_your_goals') }}"> View Goals</a><br>
+    <a href="{{ url_for('home') }}">back to home</a>
+</body>
+</html>

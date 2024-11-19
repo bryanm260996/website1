@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Short-Term Goal</title>
+</head>
+<body>
+    <h1>Set a Short-Term Goal</h1>
+    <form method="POST">
+        <label for="goal_name">Goal Name:</label>
+        <input type="text" id="goal_name" name="goal_name" required><br><br>
+
+        <label for="deadline">Deadline:</label>
+        <input type="date" id="deadline" name="deadline" required><br><br>
+
+        <label for="details">Details:</label>
+        <textarea id="details" name="details" required></textarea><br><br>
+
+        <button type="submit">Set Goal</button>
+    </form>
+
+    <a href="{{ url_for('goal_homepage') }}">Back to Goals</a>
+</body>
+</html>
